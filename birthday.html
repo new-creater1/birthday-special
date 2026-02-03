@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Birthday Celebration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 50%, #4a69bd 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        /* Welcome Screen */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a237e 0%, #311b92 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s, transform 1s;
+        }
+        
+        .welcome-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-100%);
+        }
+        
+        .welcome-content {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+        
+        .welcome-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #ffeb3b, #ff9800, #e91e63);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 1.1rem;
+        }
+        
+        .instructions h3 {
+            color: #ffeb3b;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .input-container {
+            margin: 30px 0;
+        }
+        
+        .input-container label {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #ffeb3b;
+        }
+        
+        .name-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .name-input:focus {
+            outline: none;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 235, 59, 0.4);
+        }
+        
+        .start-btn {
+            background: linear-gradient(to right, #e91e63, #ff9800);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(233, 30, 99, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(233, 30, 99, 0.6);
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        
+        .main-content.show {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header h1 {
+            font-size: 4.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ffeb3b, #ff9800, #e91e63);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: colorChange 3s infinite alternate;
+        }
+        
+        .birthday-person {
+            font-size: 3rem;
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .music-info {
+            text-align: center;
+            min-width: 150px;
+        }
+        
+        .song-title {
+            font-size: 1rem;
+            color: #ffeb3b;
+            margin-bottom: 5px;
+        }
+        
+        .artist {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .music-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .music-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+        
+        .play-btn {
+            background: linear-gradient(to right, #e91e63, #ff9800);
+            color: white;
+        }
+        
+        .volume-slider {
+            width: 80px;
+        }
+        
+        /* Sections */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #ffeb3b;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(to right, #e91e63, #ff9800);
+            border-radius: 2px;
+        }
+        
+        /* Memories Gallery */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .memory-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.4s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .memory-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 235, 59, 0.3);
+        }
+        
+        .memory-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            flex-grow: 1;
+        }
+        
+        .placeholder-img {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(45deg, #ff9800, #e91e63);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+        }
+        
+        .memory-caption {
+            padding: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Birthday Wishes */
+        .wishes-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+        
+        .wish {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            padding-left: 20px;
+            border-left: 4px solid #ffeb3b;
+            animation: fadeInUp 1s forwards;
+            opacity: 0;
+        }
+        
+        .wish:nth-child(1) { animation-delay: 0.5s; }
+        .wish:nth-child(2) { animation-delay: 1s; }
+        .wish:nth-child(3) { animation-delay: 1.5s; }
+        .wish:nth-child(4) { animation-delay: 2s; }
+        .wish:nth-child(5) { animation-delay: 2.5s; }
+        
+        /* Countdown */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .countdown-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px 15px;
+            min-width: 120px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .countdown-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+        }
+        
+        .countdown-label {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            color: #ccc;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            margin-top: 60px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .heart {
+            color: #e91e63;
+            animation: heartbeat 1.5s infinite;
+            display: inline-block;
+        }
+        
+        /* Animations */
+        @keyframes colorChange {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: particleFloat 15s linear infinite;
+        }
+        
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+        }
+        
+        /* File Upload Section */
+        .file-upload-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            background: linear-gradient(to right, #4CAF50, #2E7D32);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        
+        .file-input-label:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .uploaded-files {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .header h1 { font-size: 3.5rem; }
+            .birthday-person { font-size: 2.5rem; }
+            .section-title { font-size: 2rem; }
+            .music-player { flex-direction: column; right: 10px; padding: 15px; }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2.8rem; }
+            .birthday-person { font-size: 2rem; }
+            .welcome-content h1 { font-size: 2.5rem; }
+            .gallery { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+            .countdown-box { min-width: 100px; padding: 20px 10px; }
+            .countdown-value { font-size: 2.5rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 { font-size: 2.2rem; }
+            .birthday-person { font-size: 1.8rem; }
+            .section-title { font-size: 1.8rem; }
+            .gallery { grid-template-columns: 1fr; }
+            .wishes-container { padding: 25px 20px; }
+            .wish { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen with Name Input -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-content">
+            <h1>🎂 Birthday Celebration 🎉</h1>
+            
+            <div class="instructions">
+                <h3>📁Instruction:</h3>
+                <ul>
+                    <li>Add your name </li>
+                    <li>Add phots: <code>upload images</code>, <code>for more memorable</code>,</li>
+                    <li>Add music file: <code>with upload music button</code> (MP3 format)</li>
+                    <li>You can also upload files directly using the buttons below</li>
+                </ul>
+            </div>
+            
+            <div class="input-container">
+                <label for="birthdayName">Enter the birthday person's name:</label>
+                <input type="text" id="birthdayName" class="name-input" placeholder="e.g. Rohan, Priya, Ayush.">
+            </div>
+            
+            <div class="file-upload-section">
+                <p style="margin-bottom: 15px; color: #ffeb3b;">Optional: Upload photos and music</p>
+                <label class="file-input-label">
+                    <i class="fas fa-images"></i> Upload Photos
+                    <input type="file" id="photoUpload" class="file-input" accept="image/*" multiple>
+                </label>
+                <label class="file-input-label">
+                    <i class="fas fa-music"></i> Upload Music
+                    <input type="file" id="musicUpload" class="file-input" accept="audio/*">
+                </label>
+                <div class="uploaded-files" id="uploadedFiles">No files uploaded yet</div>
+            </div>
+            
+            <button class="start-btn" id="startBtn">
+                <i class="fas fa-birthday-cake"></i> Start Celebration!
+            </button>
+            
+            <p style="margin-top: 20px; color: #ccc; font-size: 0.9rem;">
+                TIP: If photos don't load, make sure they're in the same folder and named correctly
+            </p>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Music Player -->
+        <div class="music-player">
+            <div class="music-info">
+                <div class="song-title" id="currentSongTitle">Happy Birthday Music</div>
+                <div class="artist" id="currentArtist">Birthday Celebration</div>
+            </div>
+            <div class="music-controls">
+                <button class="music-btn prev-btn" id="prevBtn">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button class="music-btn play-btn" id="playBtn">
+                    <i class="fas fa-play" id="playIcon"></i>
+                </button>
+                <button class="music-btn next-btn" id="nextBtn">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="0.7">
+            </div>
+        </div>
+        
+        <!-- Header with Personalized Name -->
+        <div class="header">
+            <h1>Happy Birthday!</h1>
+            <div class="birthday-person" id="birthdayPerson">Dear Friend</div>
+            <p style="font-size: 1.5rem; max-width: 800px; margin: 0 auto;">Wishing you a day filled with happiness and a year filled with joy!</p>
+        </div>
+        
+        <!-- Memories Gallery Section -->
+        <div class="section">
+            <h2 class="section-title">📸 Beautiful Memories</h2>
+            <div class="gallery" id="memoriesGallery">
+                <!-- Memory items will be loaded from local folder -->
+            </div>
+            <p style="text-align: center; margin-top: 20px; color: #ccc; font-style: italic;">
+                Memories loaded 
+            </p>
+        </div>
+        
+        <!-- Birthday Wishes Section -->
+        <div class="section">
+            <h2 class="section-title">💌 Birthday Wishes</h2>
+            <div class="wishes-container">
+                <div class="wish">May your birthday be as incredible as you are! May this year bring you closer to your dreams and fill your life with beautiful moments.</div>
+                <div class="wish">On your special day, I wish you endless happiness, love, and success. You deserve all the wonderful things life has to offer!</div>
+                <div class="wish">Another year older, another year wiser, and another year more amazing! May your birthday be the start of a year filled with good luck, good health, and much happiness.</div>
+                <div class="wish">Hope your birthday is as sweet as cake, as bright as candles, and as happy as the song we sing to celebrate you today!</div>
+                <div class="wish">May all your wishes come true today and always. Enjoy every moment of your special day surrounded by love and laughter!</div>
+            </div>
+        </div>
+        
+        <!-- Countdown to Next Birthday -->
+        <div class="section">
+            <h2 class="section-title">⏳ Countdown to Next Birthday</h2>
+            <div class="countdown-container">
+                <div class="countdown-box">
+                    <div class="countdown-value" id="days">365</div>
+                    <div class="countdown-label">Days</div>
+                </div>
+                <div class="countdown-box">
+                    <div class="countdown-value" id="hours">00</div>
+                    <div class="countdown-label">Hours</div>
+                </div>
+                <div class="countdown-box">
+                    <div class="countdown-value" id="minutes">00</div>
+                    <div class="countdown-label">Minutes</div>
+                </div>
+                <div class="countdown-box">
+                    <div class="countdown-value" id="seconds">00</div>
+                    <div class="countdown-label">Seconds</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Made with <span class="heart"><i class="fas fa-heart"></i></span> for <span id="footerName">Your Special Day</span></p>
+            <p style="margin-top: 15px; color: #aaa;">This celebration will continue as long as you keep the page open!</p>
+            <p style="margin-top: 10px; color: #888; font-size: 0.9rem;">
+                Photos and music loaded 
+            </p>
+        </div>
+    </div>
+    
+    <!-- Particles Background -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Audio Element for uploaded music -->
+    <audio id="birthdayMusic" loop>
+        <!-- Music will be loaded dynamically -->
+    </audio>
+
+    <script>
+        // Elements
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const mainContent = document.getElementById('mainContent');
+        const birthdayNameInput = document.getElementById('birthdayName');
+        const startBtn = document.getElementById('startBtn');
+        const birthdayPerson = document.getElementById('birthdayPerson');
+        const footerName = document.getElementById('footerName');
+        const memoriesGallery = document.getElementById('memoriesGallery');
+        const photoUpload = document.getElementById('photoUpload');
+        const musicUpload = document.getElementById('musicUpload');
+        const uploadedFiles = document.getElementById('uploadedFiles');
+        
+        // Music elements
+        const birthdayMusic = document.getElementById('birthdayMusic');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const currentSongTitle = document.getElementById('currentSongTitle');
+        const currentArtist = document.getElementById('currentArtist');
+        
+        // Countdown elements
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        
+        // State variables
+        let uploadedPhotos = [];
+        let uploadedMusic = null;
+        let isPlaying = false;
+        let musicSource = null;
+        
+        // Memory titles for captions
+        const memoryTitles = [
+            "Beautiful Moment", "Fun Times", "Special Celebration", 
+            "Sweet Memories", "Joyful Times", "Unforgettable Day",
+            "Laughter & Joy", "Together Forever"
+        ];
+        
+        // Initialize the page
+        function init() {
+            createParticles();
+            setupEventListeners();
+            
+            // Set initial volume
+            birthdayMusic.volume = volumeSlider.value;
+            
+            // Try to load local files automatically
+            setTimeout(tryLoadLocalFiles, 500);
+        }
+        
+        // Try to load files from local folder
+        function tryLoadLocalFiles() {
+            console.log("Trying to load local files...");
+            
+            // Try to load local music
+            loadLocalMusic();
+            
+            // Try to load local photos
+            loadLocalPhotos();
+        }
+        
+        // Load music from local folder
+        function loadLocalMusic() {
+            // Try common music file names
+            const musicFiles = [
+                'birthday-music.mp3',
+                'birthday.mp3',
+                'music.mp3',
+                'song.mp3',
+                'happy-birthday.mp3',
+                'celebration.mp3'
+            ];
+            
+            // Try each possible file name
+            musicFiles.forEach(filename => {
+                const audio = new Audio();
+                audio.src = filename;
+                audio.oncanplay = function() {
+                    console.log(`Found music file: ${filename}`);
+                    birthdayMusic.src = filename;
+                    currentSongTitle.textContent = "Happy Birthday Music";
+                    currentArtist.textContent = "From Your Folder";
+                    playMusic();
+                };
+                audio.onerror = function() {
+                    // File doesn't exist, continue to next
+                };
+            });
+        }
+        
+        // Load photos from local folder
+        function loadLocalPhotos() {
+            // Try common image file patterns
+            const imagePatterns = [
+                'birthday1.jpg', 'birthday2.jpg', 'birthday3.jpg',
+                'birthday4.jpg', 'birthday5.jpg', 'birthday6.jpg',
+                'birthday7.jpg', 'birthday8.jpg',
+                'birthday1.jpeg', 'birthday2.jpeg', 'birthday3.jpeg',
+                'birthday1.png', 'birthday2.png', 'birthday3.png',
+                'photo1.jpg', 'photo2.jpg', 'photo3.jpg',
+                'image1.jpg', 'image2.jpg', 'image3.jpg',
+                'memories1.jpg', 'memories2.jpg', 'memories3.jpg'
+            ];
+            
+            let loadedCount = 0;
+            
+            imagePatterns.forEach((filename, index) => {
+                if (index >= 8) return; // Limit to 8 photos
+                
+                const img = new Image();
+                img.src = filename;
+                img.onload = function() {
+                    console.log(`Found image: ${filename}`);
+                    uploadedPhotos.push({
+                        url: filename,
+                        title: memoryTitles[loadedCount] || `Memory ${loadedCount + 1}`
+                    });
+                    loadedCount++;
+                    
+                    // Update status
+                    uploadedFiles.textContent = `Found ${loadedCount} photos in folder`;
+                    
+                    // If we have some photos, load them
+                    if (loadedCount > 0 && memoriesGallery.children.length === 0) {
+                        loadMemories();
+                    }
+                };
+                img.onerror = function() {
+                    // File doesn't exist, continue to next
+                };
+            });
+            
+            // If no images found, show message
+            setTimeout(() => {
+                if (uploadedPhotos.length === 0) {
+                    uploadedFiles.textContent = "No photos found in folder. You can upload them above.";
+                }
+            }, 2000);
+        }
+        
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.background = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                particle.style.width = `${Math.random() * 6 + 2}px`;
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = `${Math.random() * 15}s`;
+                particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Load memories into gallery
+        function loadMemories() {
+            memoriesGallery.innerHTML = '';
+            
+            // Use uploaded photos if available, otherwise show placeholders
+            const photosToShow = uploadedPhotos.length > 0 ? uploadedPhotos : 
+                Array.from({length: 8}, (_, i) => ({
+                    url: null,
+                    title: memoryTitles[i] || `Memory ${i + 1}`
+                }));
+            
+            photosToShow.forEach((memory, index) => {
+                const memoryItem = document.createElement('div');
+                memoryItem.className = 'memory-item';
+                
+                if (memory.url) {
+                    // Show actual image
+                    memoryItem.innerHTML = `
+                        <img src="${memory.url}" class="memory-img" alt="${memory.title}" 
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"placeholder-img\"><i class=\"fas fa-image\"></i></div><div class=\"memory-caption\">${memory.title}</div>'">
+                        <div class="memory-caption">${memory.title}</div>
+                    `;
+                } else {
+                    // Show placeholder
+                    const color1 = `hsl(${index * 45}, 70%, 60%)`;
+                    const color2 = `hsl(${index * 45 + 30}, 70%, 60%)`;
+                    
+                    memoryItem.innerHTML = `
+                        <div class="placeholder-img" style="background: linear-gradient(45deg, ${color1}, ${color2})">
+                            <i class="fas fa-birthday-cake"></i>
+                        </div>
+                        <div class="memory-caption">${memory.title}</div>
+                    `;
+                }
+                
+                memoriesGallery.appendChild(memoryItem);
+            });
+        }
+        
+        // Play music
+        function playMusic() {
+            if (birthdayMusic.src) {
+                birthdayMusic.play()
+                    .then(() => {
+                        isPlaying = true;
+                        playIcon.className = 'fas fa-pause';
+                    })
+                    .catch(err => {
+                        console.log("Autoplay prevented:", err);
+                        // User interaction will be required to play
+                    });
+            }
+        }
+        
+        // Update countdown to next birthday
+        function updateCountdown() {
+            // For demo, we'll set next birthday to be 6 months from now
+            const now = new Date();
+            const nextBirthday = new Date(now.getFullYear() + 1, 0, 1); // January 1st next year
+            
+            // Calculate the difference
+            const diff = nextBirthday - now;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            daysEl.textContent = days.toString().padStart(3, '0');
+            hoursEl.textContent = hours.toString().padStart(2, '0');
+            minutesEl.textContent = minutes.toString().padStart(2, '0');
+            secondsEl.textContent = seconds.toString().padStart(2, '0');
+            
+            // Update every second
+            setTimeout(updateCountdown, 1000);
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Start celebration button
+            startBtn.addEventListener('click', () => {
+                const name = birthdayNameInput.value.trim() || 'Dear Friend';
+                
+                // Update name everywhere
+                birthdayPerson.textContent = name;
+                footerName.textContent = name;
+                
+                // Hide welcome screen and show main content
+                welcomeScreen.classList.add('hidden');
+                
+                setTimeout(() => {
+                    mainContent.classList.add('show');
+                    // Trigger confetti effect
+                    createConfetti();
+                    // Start countdown
+                    updateCountdown();
+                    
+                    // Try to play music
+                    if (birthdayMusic.src) {
+                        birthdayMusic.play()
+                            .then(() => {
+                                isPlaying = true;
+                                playIcon.className = 'fas fa-pause';
+                            })
+                            .catch(err => {
+                                console.log("Playback requires user interaction");
+                            });
+                    }
+                }, 500);
+            });
+            
+            // Enter key to start
+            birthdayNameInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    startBtn.click();
+                }
+            });
+            
+            // Photo upload
+            photoUpload.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                files.forEach((file, index) => {
+                    if (index >= 8) return; // Limit to 8 photos
+                    
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        uploadedPhotos.push({
+                            url: event.target.result,
+                            title: memoryTitles[index] || `Memory ${index + 1}`
+                        });
+                        
+                        // Update status
+                        uploadedFiles.textContent = `Uploaded ${uploadedPhotos.length} photos`;
+                        
+                        // Reload gallery
+                        loadMemories();
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+            
+            // Music upload
+            musicUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        birthdayMusic.src = event.target.result;
+                        currentSongTitle.textContent = file.name.replace(/\.[^/.]+$/, "");
+                        currentArtist.textContent = "Uploaded Music";
+                        uploadedFiles.textContent = `Uploaded music: ${file.name}`;
+                        
+                        // Try to play if we're already in celebration mode
+                        if (mainContent.classList.contains('show') && isPlaying) {
+                            birthdayMusic.play();
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Music player controls
+            playBtn.addEventListener('click', () => {
+                if (!birthdayMusic.src) {
+                    alert("Please upload music first or make sure music file is in the same folder");
+                    return;
+                }
+                
+                if (isPlaying) {
+                    birthdayMusic.pause();
+                    playIcon.className = 'fas fa-play';
+                } else {
+                    birthdayMusic.play()
+                        .then(() => {
+                            playIcon.className = 'fas fa-pause';
+                        })
+                        .catch(err => {
+                            alert("Click the Start Celebration button first to play music");
+                        });
+                }
+                isPlaying = !isPlaying;
+            });
+            
+            // Volume control
+            volumeSlider.addEventListener('input', () => {
+                birthdayMusic.volume = volumeSlider.value;
+            });
+            
+            // Auto-play next song when current ends (for future implementation with playlist)
+            birthdayMusic.addEventListener('ended', () => {
+                // For now, just loop the current song
+                birthdayMusic.currentTime = 0;
+                birthdayMusic.play();
+            });
+        }
+        
+        // Create confetti effect
+        function createConfetti() {
+            const confettiCount = 150;
+            const colors = ['#ffeb3b', '#e91e63', '#4caf50', '#2196f3', '#ff9800'];
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'particle';
+                
+                // Random properties
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = `${Math.random() * 10 + 5}px`;
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.animationDelay = `${Math.random() * 5}s`;
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                
+                document.getElementById('particles').appendChild(confetti);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 8000);
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
